@@ -1,0 +1,38 @@
+import com.mongodb.client.*;
+import org.bson.Document;
+
+public class MongoDBExample {
+    public static void main(String[] args) {
+        // Connect to MongoDB
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("studentDB");
+        MongoCollection<Document> collection = database.getCollection("students");
+
+        // CREATE - Insert a new student record
+        Document newStudent = new Document("studentId", 4)
+                .append("name", "David")
+                .append("marks", 88);
+        collection.insertOne(newStudent);
+        System.out.println("New student inserted!");
+
+        // READ - Retrieve and display all students
+        System.out.println("Student Records:");
+        FindIterable<Document> students = collection.find();
+        for (Document student : students) {
+            System.out.println(student.toJson());
+        }
+
+        // UPDATE - Modify a student's marks
+        collection.updateOne(new Document("studentId", 2),
+                new Document("$set", new Document("marks", 95)));
+        System.out.println("Updated student marks!");
+
+        // DELETE - Remove a student record
+        collection.deleteOne(new Document("studentId", 3));
+        System.out.println("Deleted student record!");
+
+        // Close the MongoDB connection
+        mongoClient.close();
+    }
+}
+
